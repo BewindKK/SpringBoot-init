@@ -1,5 +1,6 @@
 package com.bewind.springbootstart.controller;
 
+import com.bewind.springbootstart.common.R;
 import com.bewind.springbootstart.model.entity.User;
 import com.bewind.springbootstart.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +17,11 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/save")
-    public void test(){
+    public R test(){
         User user = new User();
         user.setUserAccount("test");
         user.setUserPassword("123456");
         userService.save(user);
+        return R.success();
     }
 }
