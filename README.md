@@ -6,3 +6,5 @@
 - Spring MVC
 - MySQL 驱动
 - MyBatis Plus
+- 全局统一返回
+- 全局异常处理
