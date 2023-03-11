@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.bewind.springbootstart.constant.CommonConstant.SALT;
 import static com.bewind.springbootstart.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
@@ -36,11 +37,6 @@ import static com.bewind.springbootstart.constant.UserConstant.USER_LOGIN_STATE;
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService{
-
-    /**
-     * 盐值，混淆密码
-     */
-    private static final String SALT = "fdsgregsfgsdfgfdsgsdgsafdsfds";
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {

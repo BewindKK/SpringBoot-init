@@ -15,4 +15,9 @@ public interface CommonConstant {
      */
     String SORT_ORDER_DESC = " descend";
 
+    /**
+     * 升序
+     */
+    String SALT = "fdsgregsfgsdfgfdsgsdgsafdsfds";
+
 }

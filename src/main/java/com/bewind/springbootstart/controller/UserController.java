@@ -1,8 +1,10 @@
 package com.bewind.springbootstart.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bewind.springbootstart.annotation.AuthCheck;
 import com.bewind.springbootstart.common.DeleteRequest;
 import com.bewind.springbootstart.common.R;
+import com.bewind.springbootstart.constant.UserConstant;
 import com.bewind.springbootstart.exception.ApiException;
 import com.bewind.springbootstart.model.dto.user.*;
 import com.bewind.springbootstart.model.entity.User;
@@ -12,15 +14,16 @@ import com.bewind.springbootstart.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
 import static com.bewind.springbootstart.common.ApiCode.PARAM_ERROR;
+import static com.bewind.springbootstart.constant.CommonConstant.SALT;
 
 @RestController
 @RequestMapping("/user")
@@ -113,12 +116,16 @@ public class UserController {
      * @return
      */
     @PostMapping("/add")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public R<Long> addUser(@RequestBody UserAddRequest userAddRequest, HttpServletRequest request) {
         if (userAddRequest == null) {
             throw new ApiException(PARAM_ERROR);
         }
         User user = new User();
         BeanUtils.copyProperties(userAddRequest, user);
+        String userPassword = user.getUserPassword();
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+        user.setUserPassword(encryptPassword);
         boolean result = userService.save(user);
         if (!result){
             throw new ApiException("用户创建失败");
@@ -134,6 +141,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/delete")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public R<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new ApiException("参数错误");
@@ -150,6 +158,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/update")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public R<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
                                             HttpServletRequest request) {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
@@ -172,6 +181,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/get")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public R<User> getUserById(long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new ApiException(PARAM_ERROR);
@@ -205,6 +215,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/list/page")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public R<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest,
                                                    HttpServletRequest request) {
         long current = userQueryRequest.getCurrent();
