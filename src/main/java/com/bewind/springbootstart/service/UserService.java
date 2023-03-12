@@ -55,4 +55,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     List<UserVO> getUserVO(List<User> userList);
+
+    /**
+     * 校验
+     * @param user
+     * @param add 创建时，某些参数不能为空
+     */
+    void validUser(User user, boolean add);
 }

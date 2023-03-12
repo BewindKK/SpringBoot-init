@@ -2,6 +2,7 @@ package com.bewind.springbootstart.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bewind.springbootstart.annotation.AuthCheck;
+import com.bewind.springbootstart.common.ApiCode;
 import com.bewind.springbootstart.common.DeleteRequest;
 import com.bewind.springbootstart.common.R;
 import com.bewind.springbootstart.constant.UserConstant;
@@ -126,9 +127,11 @@ public class UserController {
         String userPassword = user.getUserPassword();
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         user.setUserPassword(encryptPassword);
+        //TODO 参数校验
+        userService.validUser(user,true);
         boolean result = userService.save(user);
         if (!result){
-            throw new ApiException("用户创建失败");
+            throw new ApiException(PARAM_ERROR,"添加用户失败");
         }
         return R.success(user.getId());
     }
@@ -144,7 +147,7 @@ public class UserController {
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public R<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
-            throw new ApiException("参数错误");
+            throw new ApiException(ApiCode.VALIDATE_FAILED);
         }
         boolean b = userService.removeById(deleteRequest.getId());
         return R.success(b);
@@ -168,7 +171,7 @@ public class UserController {
         BeanUtils.copyProperties(userUpdateRequest, user);
         boolean result = userService.updateById(user);
         if (!result){
-            throw new ApiException("更新错误");
+            throw new ApiException(PARAM_ERROR,"修改失败");
         }
         return R.success(true);
     }
@@ -188,7 +191,7 @@ public class UserController {
         }
         User user = userService.getById(id);
         if (user==null){
-            throw new ApiException("用户不存在");
+            throw new ApiException(PARAM_ERROR,"获取失败");
         }
         return R.success(user);
     }

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Optional;
 
+import static javax.management.remote.JMXConnectionNotification.FAILED;
+
 @Data
 @NoArgsConstructor
 public class R<T> implements Serializable {
@@ -35,11 +37,7 @@ public class R<T> implements Serializable {
         this.data = data;
     }
 
-    public R(IErrorCode errorCode) {
-        errorCode = Optional.ofNullable(errorCode).orElse(ApiCode.FAILED);
-        this.code = errorCode.getCode();
-        this.message = errorCode.getMessage();
-    }
+
 
     /**
      * 成功
@@ -74,7 +72,14 @@ public class R<T> implements Serializable {
      * 失败返回结果
      */
     public static <T> R<T> failed() {
-        return failed(ApiCode.FAILED);
+        return new R<T>(ApiCode.FAILED.getCode(), ApiCode.FAILED.getMessage(), null);
+    }
+
+    /**
+     * 失败返回结果
+     */
+    public static <T> R<T> failed(int code,String message) {
+        return new R<T>(code,message, null);
     }
 
     /**
@@ -87,24 +92,7 @@ public class R<T> implements Serializable {
         return new R<T>(ApiCode.FAILED.getCode(), message, null);
     }
 
-    /**
-     * 失败
-     *
-     * @param errorCode 错误码
-     * @return {code:封装接口取,message:封装接口取,data:null}
-     */
-    public static <T> R<T> failed(IErrorCode errorCode) {
-        return new R<T>(errorCode.getCode(), errorCode.getMessage(), null);
-    }
 
-    /**
-     * 失败返回结果
-     *
-     * @param errorCode 错误码
-     * @param message   错误信息
-     * @return {code:枚举ApiErrorCode取,message:自定义,data:null}
-     */
-    public static <T> R<T> failed(IErrorCode errorCode, String message) {
-        return new R<T>(errorCode.getCode(), message, null);
-    }
+
+
 }

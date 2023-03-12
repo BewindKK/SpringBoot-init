@@ -1,25 +1,30 @@
 package com.bewind.springbootstart.exception;
 
-import com.bewind.springbootstart.common.IErrorCode;
+import com.bewind.springbootstart.common.ApiCode;
 
 public class ApiException extends RuntimeException {
-    private IErrorCode errorCode;
+    /**
+     * 错误码
+     */
+    private final int code;
 
-    public ApiException(IErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
-    }
-
-    public ApiException(String message) {
+    public ApiException(int code, String message) {
         super(message);
+        this.code = code;
     }
 
-    public ApiException(IErrorCode errorCode, String message) {
+    public ApiException(ApiCode apiCode) {
+        super(apiCode.getMessage());
+        this.code = apiCode.getCode();
+    }
+
+    public ApiException(ApiCode apiCode, String message) {
         super(message);
-        this.errorCode = errorCode;
+        this.code = apiCode.getCode();
     }
 
-    public IErrorCode getErrorCode() {
-        return errorCode;
+    public int getCode() {
+        return code;
     }
+
 }

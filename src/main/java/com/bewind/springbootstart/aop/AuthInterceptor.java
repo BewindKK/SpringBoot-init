@@ -1,6 +1,7 @@
 package com.bewind.springbootstart.aop;
 
 import com.bewind.springbootstart.annotation.AuthCheck;
+import com.bewind.springbootstart.common.ApiCode;
 import com.bewind.springbootstart.exception.ApiException;
 import com.bewind.springbootstart.model.entity.User;
 import com.bewind.springbootstart.model.enums.UserRoleEnum;
@@ -45,17 +46,17 @@ public class AuthInterceptor {
         if (StringUtils.isNotBlank(mustRole)) {
             UserRoleEnum mustUserRoleEnum = UserRoleEnum.getEnumByValue(mustRole);
             if (mustUserRoleEnum == null) {
-                throw new ApiException("无权限");
+                throw new ApiException(ApiCode.PARAM_ERROR, "无权限");
             }
             String userRole = loginUser.getUserRole();
             // 如果被封号，直接拒绝
             if (UserRoleEnum.BAN.equals(mustUserRoleEnum)) {
-                throw new ApiException("无权限");
+                throw new ApiException(ApiCode.PARAM_ERROR, "无权限");
             }
             // 必须有管理员权限
             if (UserRoleEnum.ADMIN.equals(mustUserRoleEnum)) {
                 if (!mustRole.equals(userRole)) {
-                    throw new ApiException("无权限");
+                    throw new ApiException(ApiCode.PARAM_ERROR, "无权限");
                 }
             }
         }

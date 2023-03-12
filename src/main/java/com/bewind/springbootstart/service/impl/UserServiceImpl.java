@@ -67,7 +67,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             user.setUserPassword(encryptPassword);
             boolean saveResult = this.save(user);
             if (!saveResult) {
-                throw new ApiException("注册失败，数据库错误");
+                throw new ApiException(ApiCode.VALIDATE_FAILED,"注册失败，数据库错误");
             }
             return user.getId();
         }
@@ -114,7 +114,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public boolean userLogout(HttpServletRequest request) {
         if (request.getSession().getAttribute(USER_LOGIN_STATE) == null) {
-            throw new ApiException("未登录");
+            throw new ApiException(ApiCode.VALIDATE_FAILED,"未登录");
         }
         // 移除登录态
         request.getSession().removeAttribute(USER_LOGIN_STATE);
@@ -127,13 +127,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User currentUser = (User) userObj;
         if (currentUser == null || currentUser.getId() == null) {
-            throw new ApiException("未登录");
+            throw new ApiException(ApiCode.VALIDATE_FAILED,"未登录");
         }
         // 从数据库查询（追求性能的话可以注释，直接走缓存）
         long userId = currentUser.getId();
         currentUser = this.getById(userId);
         if (currentUser == null) {
-            throw new ApiException("未登录");
+            throw new ApiException(ApiCode.VALIDATE_FAILED,"未登录");
         }
         return currentUser;
     }
@@ -141,7 +141,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
         if (userQueryRequest == null) {
-            throw new ApiException( "请求参数为空");
+            throw new ApiException( ApiCode.VALIDATE_FAILED,"请求参数为空");
         }
         Long id = userQueryRequest.getId();
         String userName = userQueryRequest.getUserName();
@@ -175,6 +175,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return new ArrayList<>();
         }
         return userList.stream().map(this::getUserVO).collect(Collectors.toList());
+    }
+
+    @Override
+    public void validUser(User user, boolean add) {
+        if (user == null) {
+            throw new ApiException(ApiCode.VALIDATE_FAILED);
+        }
+        String userAccount = user.getUserAccount();
+        String userPassword = user.getUserPassword();
+        String userName = user.getUserName();
+
+        // 创建时，参数不能为空
+        if (add) {
+            if (StringUtils.isAnyBlank(userAccount, userPassword)){
+                throw new ApiException(ApiCode.VALIDATE_FAILED,"用户账户或密码为空");
+            }
+        }
+        // 有参数则校验
+        if (StringUtils.isNotBlank(userAccount) && userAccount.length() < 4) {
+            throw new ApiException(ApiCode.VALIDATE_FAILED, "用户账户长度过短");
+        }
+        if (StringUtils.isNotBlank(userPassword) && userPassword.length() < 8) {
+            throw new ApiException(ApiCode.VALIDATE_FAILED, "用户密码过短");
+        }
+        if (StringUtils.isNotBlank(userName) && userName.length() > 20) {
+            throw new ApiException(ApiCode.VALIDATE_FAILED, "用户名过长");
+        }
     }
 }
 

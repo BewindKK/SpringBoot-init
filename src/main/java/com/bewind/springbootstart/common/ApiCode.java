@@ -1,6 +1,6 @@
 package com.bewind.springbootstart.common;
 
-public enum ApiCode implements IErrorCode {
+public enum ApiCode {
 
     /**
      * 成功
@@ -29,12 +29,10 @@ public enum ApiCode implements IErrorCode {
         this.message = message;
     }
 
-    @Override
     public Integer getCode() {
         return code;
     }
 
-    @Override
     public String getMessage() {
         return message;
     }
