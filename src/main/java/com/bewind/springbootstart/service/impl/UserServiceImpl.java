@@ -8,6 +8,7 @@ import com.bewind.springbootstart.constant.CommonConstant;
 import com.bewind.springbootstart.exception.ApiException;
 import com.bewind.springbootstart.model.dto.user.UserQueryRequest;
 import com.bewind.springbootstart.model.entity.User;
+import com.bewind.springbootstart.model.enums.UserRoleEnum;
 import com.bewind.springbootstart.model.vo.LoginUserVO;
 import com.bewind.springbootstart.model.vo.UserVO;
 import com.bewind.springbootstart.service.UserService;
@@ -202,6 +203,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (StringUtils.isNotBlank(userName) && userName.length() > 20) {
             throw new ApiException(ApiCode.VALIDATE_FAILED, "用户名过长");
         }
+    }
+
+    /**
+     * 是否为管理员
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        // 仅管理员可查询
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        return isAdmin(user);
+    }
+
+    @Override
+    public boolean isAdmin(User user) {
+        return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
     }
 }
 

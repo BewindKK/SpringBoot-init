@@ -62,4 +62,14 @@ public interface UserService extends IService<User> {
      * @param add 创建时，某些参数不能为空
      */
     void validUser(User user, boolean add);
+
+    boolean isAdmin(HttpServletRequest request);
+
+    /**
+     * 是否为管理员
+     *
+     * @param user
+     * @return
+     */
+    boolean isAdmin(User user);
 }

@@ -19,7 +19,11 @@ public enum ApiCode {
     /**
      * 执行错误
      */
-    PARAM_ERROR(444,"执行错误");
+    PARAM_ERROR(444,"执行错误"),
+
+    NO_AUTH_ERROR(40101, "无权限"),
+
+    NOT_FOUND_ERROR(000,"请求数据不存在");
 
     private final Integer code;
     private final String message;

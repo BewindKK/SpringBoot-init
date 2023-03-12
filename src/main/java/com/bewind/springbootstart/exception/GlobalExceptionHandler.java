@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = ApiException.class)
     public R<Map<String, Object>> handle(ApiException e) {
-        log.error("BusinessException", e);
+        log.error("ApiException", e);
         return R.failed(e.getMessage());
     }
 }
